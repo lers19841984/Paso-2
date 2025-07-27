@@ -10,23 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
         run: |
-          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+          echo "date=$(date -u +%Y%m%d)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
           path: .buildozer_global
-          key: buildozer-global-${{ hashFiles('buildozer.spec') }} # Replace with your path
+          key: buildozer-global-${{ hashFiles('buildozer.spec') }}-py38
 
-      - uses: actions/cache@v4
+      - name: Cache Buildozer project directory
+        uses: actions/cache@v4
         with:
           path: .buildozer
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}-py38
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
